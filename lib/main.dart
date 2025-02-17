@@ -5,13 +5,13 @@ import 'package:nfc_manager/nfc_manager.dart';
 import 'package:intl/intl.dart';
 
 void main() {
-  runApp( MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return  MaterialApp(
+    return MaterialApp(
       title: 'NFC Scanner',
       locale: Locale('ar'),
       theme: ThemeData(
@@ -19,17 +19,17 @@ class MyApp extends StatelessWidget {
         colorScheme: ColorScheme.fromSwatch(
           primarySwatch: Colors.indigo,
           accentColor: Colors.indigo.shade700,
-          brightness: Brightness.light,),
-          primaryColor: Colors.white,
+          brightness: Brightness.light,
+        ),
+        primaryColor: Colors.white,
       ),
-
       home: NFCScanner(),
     );
   }
 }
 
 class NFCScanner extends StatefulWidget {
-   NFCScanner({Key? key}) : super(key: key);
+  NFCScanner({Key? key}) : super(key: key);
   @override
   _NFCScannerState createState() => _NFCScannerState();
 }
@@ -39,12 +39,13 @@ class _NFCScannerState extends State<NFCScanner> {
   String nextInspectionDate = "";
   String errorMessage = "";
   final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
- final _formKey = GlobalKey<FormState>();
- bool _isSanning = false;
- bool _isWrittingIn = false;
- TextEditingController carInfoController=TextEditingController();
-  TextEditingController nextInspectionDateController=TextEditingController();
- String day = '0';
+  final _formKey = GlobalKey<FormState>();
+  bool _isSanning = false;
+  bool _isWrittingIn = false;
+  TextEditingController carInfoController = TextEditingController();
+  TextEditingController nextInspectionDateController = TextEditingController();
+  String day = '0';
+
   @override
   void initState() {
     super.initState();
@@ -94,8 +95,7 @@ class _NFCScannerState extends State<NFCScanner> {
               NfcManager.instance.stopSession();
               return;
             }
-
-String data = utf8.decode(message.records.first.payload);
+            String data = utf8.decode(message.records.first.payload);
             data = data.replaceFirst(RegExp(r'^[^0-9]+'), '');
 
             List<String> dataParts = data.split('|');
@@ -138,7 +138,6 @@ String data = utf8.decode(message.records.first.payload);
               nextInspectionDate = "";
             });
           } finally {
-            
             carInfoController.clear();
             nextInspectionDateController.clear();
             NfcManager.instance.stopSession();
@@ -164,7 +163,7 @@ String data = utf8.decode(message.records.first.payload);
   }
 
   // حفظ البيانات إلى بطاقة NFC
-  void _saveToNFC({required int days , required String dataa}) async {
+  void _saveToNFC({required int days, required String dataa}) async {
     setState(() {
       _isWrittingIn = true;
     });
@@ -175,12 +174,9 @@ String data = utf8.decode(message.records.first.payload);
       return;
     }
     try {
-     
-
       DateTime nextInspection = DateTime.now().add(Duration(days: days));
       String carData = dataa;
       String formatedData = "$days|$carData";
-    
       String data = "${_dateFormat.format(nextInspection)}|$formatedData";
 
       NfcManager.instance.startSession(
@@ -224,11 +220,10 @@ String data = utf8.decode(message.records.first.payload);
           }
         },
         onError: (error) {
-            setState(() {
+          setState(() {
             errorMessage = "حدث خطأ أثناء الكتابة على البطاقة: $error";
           });
           return
-        
           NfcManager.instance.stopSession(errorMessage: error.toString());
         },
       );
@@ -245,7 +240,10 @@ String data = utf8.decode(message.records.first.payload);
       appBar: AppBar(
         title: Text(
           'تطبيق فحص NFC',
-          style: TextStyle(fontWeight: FontWeight.bold, letterSpacing: 1.2,color: Colors.white),
+          style: TextStyle(
+              fontWeight: FontWeight.bold,
+              letterSpacing: 1.2,
+              color: Colors.white),
         ),
         centerTitle: true,
         backgroundColor: Colors.indigo,
@@ -266,7 +264,8 @@ String data = utf8.decode(message.records.first.payload);
         child: SafeArea(
           child: Center(
             child: SingleChildScrollView(
-              padding: EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
+              padding:
+                  EdgeInsets.symmetric(horizontal: 24.0, vertical: 30.0),
               child: Card(
                 elevation: 12,
                 shadowColor: Colors.black45,
@@ -359,7 +358,7 @@ String data = utf8.decode(message.records.first.payload);
                           child: Text(
                             'افحص بطاقة NFC',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                         ),
                         if (errorMessage.isNotEmpty)
@@ -401,12 +400,11 @@ String data = utf8.decode(message.records.first.payload);
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () =>
-                              _saveToNFC(days: int.parse(day), dataa: carInfo),
+                          onPressed: () => _saveToNFC(days: int.parse(day), dataa: carInfo),
                           child: Text(
                             'تخزين البيانات في البطاقة',
                             style: TextStyle(
-                                fontSize: 18, fontWeight: FontWeight.bold,color: Colors.white),
+                                fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
                           ),
                         ),
                       ],
@@ -420,8 +418,8 @@ String data = utf8.decode(message.records.first.payload);
       ),
     );
   }
-  
- _Textformfield({
+
+  _Textformfield({
     required String hint,
     required String label,
     required validator,
@@ -429,13 +427,11 @@ String data = utf8.decode(message.records.first.payload);
     required onChanged,
   }) {
     return TextFormField(
-    
       controller: controller,
       onChanged: onChanged,
       validator: validator,
       style: TextStyle(fontSize: 16),
       decoration: InputDecoration(
-        
         labelText: label,
         hintText: hint,
         labelStyle: TextStyle(
@@ -456,4 +452,5 @@ String data = utf8.decode(message.records.first.payload);
         ),
       ),
     );
-  }} 
+  }
+}

@@ -38,6 +38,7 @@ dependencies:
   ndef: ^0.3.4
   nfc_manager: ^3.0.0
   intl: ^0.17.0
+  permission_handler: ^10.2.0
 
 dev_dependencies:
   flutter_test:
