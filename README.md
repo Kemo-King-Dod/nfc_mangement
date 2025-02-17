@@ -35,14 +35,14 @@
 
   ```bash
     flutter pub get
-    ```
+    
 
 
 3. **تشغيل التطبيق:**
 
   ```bash
     flutter run 
-    ```
+    
 
 
 ## الاستخدام  
