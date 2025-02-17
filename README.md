@@ -33,7 +33,7 @@
 
 2. **تثبيت الحزم:**
 
-  ````bash
+  ```bash
     flutter pub get
     ```
 
