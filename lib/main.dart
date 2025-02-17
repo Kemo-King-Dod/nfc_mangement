@@ -38,7 +38,7 @@ class _NFCScannerState extends State<NFCScanner> {
   String carInfo = "";
   String nextInspectionDate = "";
   String errorMessage = "";
-  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd');
+  final DateFormat _dateFormat = DateFormat('yyyy-MM-dd-HH:mm');
   final _formKey = GlobalKey<FormState>();
   bool _isSanning = false;
   bool _isWrittingIn = false;
@@ -117,14 +117,22 @@ class _NFCScannerState extends State<NFCScanner> {
             if (currentDate.isBefore(storedDate)) {
               setState(() {
                 _isSanning = false;
-                errorMessage = "لم يمر${dataParts[1]} أيام منذ آخر فحص.";
-                carInfo = dataParts.toString();
+                var leftDays =storedDate.difference(DateTime.now()).inDays;
+                var leftHours = storedDate.difference(DateTime.now()).inHours- (leftDays*24);
+                errorMessage = "مدة الفحص ${dataParts[1]} يوم تبقى ${leftDays} أيام و ${leftHours} ساعة";
+                carInfo = dataParts[2].toString();
+                    Future.delayed(Duration(seconds: 5), () {
+                setState(() {
+                  carInfo = "";
+                  errorMessage="";
+                });
+              });
                 nextInspectionDate = dataParts[0].toString();
               });
             } else {
               setState(() {
                 _isSanning = false;
-                carInfo = dataParts[1];
+             
                 nextInspectionDate = _dateFormat.format(storedDate);
                 errorMessage = "";
               });
@@ -178,7 +186,6 @@ class _NFCScannerState extends State<NFCScanner> {
       String carData = dataa;
       String formatedData = "$days|$carData";
       String data = "${_dateFormat.format(nextInspection)}|$formatedData";
-
       NfcManager.instance.startSession(
         onDiscovered: (NfcTag tag) async {
           try {
@@ -206,6 +213,13 @@ class _NFCScannerState extends State<NFCScanner> {
             await ndef.write(message);
             setState(() {
               errorMessage = "تم تخزين البيانات بنجاح. \n البيانات هي $dataa";
+              Future.delayed(Duration(seconds: 5), () {
+                setState(() {
+                  errorMessage = "";
+                  carInfo = "";
+                  nextInspectionDate = "";
+                });
+              });
             });
           } catch (e) {
             setState(() {
@@ -379,14 +393,30 @@ class _NFCScannerState extends State<NFCScanner> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                'معلومات الشحنة: $carInfo',
+                                "بيانات الشحنة: $carInfo",
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.indigo.shade800,
+                                ),
                               ),
+                              SizedBox(height: 10),
                               Text(
-                                'تاريخ الفحص القادم: $nextInspectionDate',
+                                "مدة الشحنة: $day يوم",
                                 style: TextStyle(
-                                    fontSize: 16, fontWeight: FontWeight.w500),
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.indigo.shade800,
+                                ),
+                              ),
+                              SizedBox(height: 10),
+                              Text(
+                                "تاريخ الفحص القادم: $nextInspectionDate",
+                                style: TextStyle(
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.w600,
+                                  color: Colors.indigo.shade800,
+                                ),
                               ),
                             ],
                           ),
@@ -400,7 +430,12 @@ class _NFCScannerState extends State<NFCScanner> {
                               borderRadius: BorderRadius.circular(12),
                             ),
                           ),
-                          onPressed: () => _saveToNFC(days: int.parse(day), dataa: carInfo),
+                          onPressed: () {
+                            if(!_formKey.currentState!.validate())return;
+
+                          _saveToNFC(days: int.parse(day), dataa: carInfo);
+                          
+                          } ,
                           child: Text(
                             'تخزين البيانات في البطاقة',
                             style: TextStyle(
